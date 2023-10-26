@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_institutions_testcase/Pages/detailsScreen.dart';
 import 'package:flutter_institutions_testcase/model/institution.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -18,9 +19,8 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          title: const Text(''),
-        ),
+        appBar: appBar(),
+        backgroundColor: Colors.white,
         body: Padding(
           padding: const EdgeInsets.all(8.0),
           child: Column(
@@ -28,66 +28,146 @@ class _HomeScreenState extends State<HomeScreen> {
               const SizedBox(
                 height: 20,
               ),
-              TextField(
-                onChanged: (value) {
-                  _runFilter(value);
-                },
-                decoration: const InputDecoration(
-                  hintText: "Search...",
-                ),
-              ),
+              _searchField(),
               const SizedBox(
                 height: 20,
               ),
-              Expanded(
-                child: FutureBuilder<List<Institution>>(
-                  future: _institutionList,
-                  builder: (context, snapshot) {
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return const Center(
-                        child: SizedBox(
-                          width: 50.0,
-                          height: 50.0,
-                          child: CircularProgressIndicator(),
-                        ),
-                      );
-                    } else if (snapshot.hasError) {
-                      return Text(snapshot.error.toString());
-                    } else if (!snapshot.hasData) {
-                      return const Text('Veriler yükleniyor...');
-                    } else {
-                      var institutionList = snapshot.data!;
-                      var items = searchText == ""
-                          ? (institutionList)
-                          : (filteredItems.isNotEmpty ? filteredItems : []);
-                      return ListView.builder(
-                        itemBuilder: (context, index) {
-                          var institution = items[index];
-                          return ListTile(
-                            title: Text(institution.title.toString()),
-                            subtitle: Text(institution.email.toString()),
-                            leading: Text(institution.code.toString()),
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) =>
-                                      detailsScreen(institution),
-                                ),
-                              );
-                            },
-                          );
-                        },
-                        itemCount: items.length,
-                      );
-                    }
-                  },
+              const Text(
+                'Institutions',
+                style: TextStyle(
+                  color: Colors.black,
+                  fontSize: 18,
+                  fontWeight: FontWeight.w600,
                 ),
+              ),
+              const SizedBox(
+                height: 30,
+              ),
+              Expanded(
+                child: _listViewBuilder(),
               ),
             ],
           ),
         ));
   }
+
+  FutureBuilder<List<Institution>> _listViewBuilder() {
+    return FutureBuilder<List<Institution>>(
+      future: _institutionList,
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(
+            child: SizedBox(
+              width: 50.0,
+              height: 50.0,
+              child: CircularProgressIndicator(),
+            ),
+          );
+        } else if (snapshot.hasError) {
+          return Text(snapshot.error.toString());
+        } else if (!snapshot.hasData) {
+          return const Text('Veriler yükleniyor...');
+        } else {
+          var institutionList = snapshot.data!;
+          var items = searchText == ""
+              ? (institutionList)
+              : (filteredItems.isNotEmpty ? filteredItems : []);
+          return ListView.builder(
+            itemBuilder: (context, index) {
+              var institution = items[index];
+              return Container(
+                //color: Colors.grey.shade200,
+                padding: const EdgeInsets.all(2),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(5),
+                  color: Colors.grey.shade200,
+                ),
+                child: Card(
+                  elevation: 2,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(15.0),
+                  ),
+                  child: ListTile(
+                    //index % 2 ? :
+                    //contentPadding: const EdgeInsets.all(2),
+                    title: Text(
+                      institution.title.toString(),
+                      textAlign: TextAlign.left,
+                    ),
+                    subtitle: Text(institution.email.toString()),
+                    //leading: Text(institution.code.toString()),
+                    leading: const Icon(
+                      Icons.apartment,
+                      size: 30,
+                    ),
+                    trailing: const Icon(Icons.arrow_forward_ios),
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => detailsScreen(institution),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+              );
+            },
+            itemCount: items.length,
+          );
+        }
+      },
+    );
+  }
+
+  Container _searchField() {
+    return Container(
+      margin: const EdgeInsets.only(top: 10, left: 10, right: 10),
+      decoration: BoxDecoration(boxShadow: [
+        BoxShadow(
+            color: const Color(0xff1D1617).withOpacity(0.11),
+            blurRadius: 40,
+            spreadRadius: 0.0)
+      ]),
+      child: TextField(
+        onChanged: (value) {
+          _runFilter(value);
+        },
+        decoration: InputDecoration(
+          filled: true,
+          fillColor: Colors.white,
+          contentPadding: const EdgeInsets.all(15),
+          prefixIcon: Padding(
+            padding: const EdgeInsets.all(12.0),
+            child: SvgPicture.asset('assets/icons/Search.svg'),
+          ),
+          border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(15),
+              borderSide: BorderSide.none),
+          hintText: "Search...",
+        ),
+      ),
+    );
+  }
+
+  AppBar appBar() {
+    return AppBar(
+      title: const Text(
+        'Institution App',
+        style: TextStyle(
+          color: Colors.black,
+          fontSize: 18,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
+      centerTitle: true,
+      backgroundColor: Colors.white,
+      elevation: 0.0,
+    );
+  }
+
+  late final Future<List<Institution>> _institutionList;
+  String searchText = "";
 
   Future<List<Institution>> _getKamuKurumList() async {
     try {
@@ -105,8 +185,6 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
-  late final Future<List<Institution>> _institutionList;
-  String searchText = "";
   @override
   void initState() {
     super.initState();
