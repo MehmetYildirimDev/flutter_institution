@@ -1,16 +1,7 @@
-# flutter_institutions_testcase
+Home Page:
 
-A new Flutter project.
+<img src="https://github.com/MehmetYildirimDev/flutter_institution/assets/95688733/8ad4a693-abd7-4ade-ad06-358e00c2d8b8" widht="750" height="750">
 
-## Getting Started
+Details Page:
 
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+<img src="https://github.com/MehmetYildirimDev/flutter_institution/assets/95688733/7ebc18ad-b581-40c5-aab5-fd2191951247" widht="750" height="750">
