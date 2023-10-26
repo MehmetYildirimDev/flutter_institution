@@ -14,7 +14,10 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  String connectionStatus = 'Bilinmiyor';
+  String connectionStatus = 'unknown';
+  String searchText = "";
+  late final Future<List<Institution>> _institutionList;
+  List<Institution> filteredItems = [];
 
   @override
   Widget build(BuildContext context) {
@@ -51,6 +54,13 @@ class _HomeScreenState extends State<HomeScreen> {
         ));
   }
 
+  @override
+  void initState() {
+    super.initState();
+    initConnectivity();
+    _institutionList = _getInstitutionList();
+  }
+
   FutureBuilder<List<Institution>> _listViewBuilder() {
     return FutureBuilder<List<Institution>>(
       future: _institutionList,
@@ -58,15 +68,15 @@ class _HomeScreenState extends State<HomeScreen> {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(
             child: SizedBox(
-              width: 50.0,
-              height: 50.0,
+              width: 50,
+              height: 50,
               child: CircularProgressIndicator(),
             ),
           );
         } else if (snapshot.hasError) {
           return Text(snapshot.error.toString());
         } else if (!snapshot.hasData) {
-          return const Text('Veriler yükleniyor...');
+          return const Text('Datas Uploading...');
         } else {
           var institutionList = snapshot.data!;
           var items = searchText == ""
@@ -76,7 +86,6 @@ class _HomeScreenState extends State<HomeScreen> {
             itemBuilder: (context, index) {
               var institution = items[index];
               return Container(
-                //color: Colors.grey.shade200,
                 padding: const EdgeInsets.all(2),
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(5),
@@ -88,19 +97,20 @@ class _HomeScreenState extends State<HomeScreen> {
                     borderRadius: BorderRadius.circular(15.0),
                   ),
                   child: ListTile(
-                    //index % 2 ? :
-                    //contentPadding: const EdgeInsets.all(2),
                     title: Text(
                       institution.title.toString(),
                       textAlign: TextAlign.left,
                     ),
                     subtitle: Text(institution.email.toString()),
-                    //leading: Text(institution.code.toString()),
                     leading: const Icon(
                       Icons.apartment,
                       size: 30,
+                      color: Colors.deepOrange,
                     ),
-                    trailing: const Icon(Icons.arrow_forward_ios),
+                    trailing: const Icon(
+                      Icons.arrow_forward_ios,
+                      color: Colors.deepOrange,
+                    ),
                     onTap: () {
                       Navigator.push(
                         context,
@@ -166,10 +176,7 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  late final Future<List<Institution>> _institutionList;
-  String searchText = "";
-
-  Future<List<Institution>> _getKamuKurumList() async {
+  Future<List<Institution>> _getInstitutionList() async {
     try {
       var response = await Dio().get(
           'https://gist.githubusercontent.com/berkanaslan/35511991222bfc0914cd4c2c031057e2/raw/');
@@ -185,15 +192,6 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
-  @override
-  void initState() {
-    super.initState();
-    initConnectivity();
-    _institutionList = _getKamuKurumList();
-  }
-
-  List<Institution> filteredItems = [];
-
   void _runFilter(String value) {
     searchText = value.toString();
     final items = _institutionList;
@@ -207,23 +205,29 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
-// Bağlantıyı kontrol etmek için bu fonksiyonu kullanabilirsiniz.
   Future<void> initConnectivity() async {
     var connectivityResult = await Connectivity().checkConnectivity();
     if (connectivityResult == ConnectivityResult.mobile) {
       setState(() {
-        connectionStatus = 'Mobil İnternet Var';
+        connectionStatus = 'There is mobile internet';
       });
     } else if (connectivityResult == ConnectivityResult.wifi) {
       setState(() {
-        connectionStatus = 'Wi-Fi İnternet Var';
+        connectionStatus = 'There is Wi-Fi internet';
       });
     } else {
       setState(() {
-        connectionStatus = 'İnternet Yok';
-        // İnternet yoksa burada kullanıcıya hata mesajını gösterebilirsiniz.
+        connectionStatus = 'There is not internet';
+        showDialog(
+          context: context,
+          builder: (context) {
+            return const AlertDialog(
+              title: Text('Network Error'),
+              content: Text('Internet is not available'),
+            );
+          },
+        );
       });
     }
-    debugPrint(connectionStatus.toString());
   }
 }

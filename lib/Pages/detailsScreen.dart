@@ -19,11 +19,6 @@ class _detailsScreenState extends State<detailsScreen> {
   _detailsScreenState(this.institution);
 
   @override
-  void initState() {
-    super.initState();
-  }
-
-  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: appBar(),
@@ -71,6 +66,7 @@ class _detailsScreenState extends State<detailsScreen> {
             'assets/icons/Arrow - Left 2.svg',
             height: 20,
             width: 20,
+            color: Colors.deepOrange,
           ),
         ),
       ),
@@ -83,7 +79,7 @@ class _detailsScreenState extends State<detailsScreen> {
     if (await canLaunchUrlString(telScheme)) {
       await launchUrlString(telScheme);
     } else {
-      throw 'Telefon görüşmesi başlatilamadi: $telScheme';
+      throw 'The phone call couldn\'t be initiated: $telScheme';
     }
   }
 
@@ -108,6 +104,7 @@ class _detailsScreenState extends State<detailsScreen> {
             fontSize: 18,
             fontWeight: FontWeight.w600,
           ),
+          textAlign: TextAlign.center,
         ),
         const SizedBox(height: 20),
         _buildCustomListTile(
@@ -123,7 +120,7 @@ class _detailsScreenState extends State<detailsScreen> {
         ),
         const SizedBox(height: 20),
         _buildCustomListTile(
-          Icons.map,
+          Icons.phone,
           'Phone',
           institution.tel,
           onPressed: () {
@@ -169,6 +166,7 @@ class _detailsScreenState extends State<detailsScreen> {
         leading: Icon(
           leadingIcon,
           size: 35,
+          color: Colors.deepOrange,
         ),
         title: Text(title),
         subtitle: Text(subtitle),
@@ -177,7 +175,7 @@ class _detailsScreenState extends State<detailsScreen> {
                 onPressed: onPressed,
                 child: Text(buttonText),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.grey.shade500,
+                  backgroundColor: Colors.deepOrange,
                   foregroundColor: Colors.white,
                 ),
               )
