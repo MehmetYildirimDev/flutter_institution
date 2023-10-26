@@ -33,151 +33,11 @@ class _detailsScreenState extends State<detailsScreen> {
             'assets/images/tbmm.jpg',
             fit: BoxFit.fill,
           ),
-          const SizedBox(height: 0),
+          const SizedBox(height: 10),
           Padding(
             padding: const EdgeInsets.all(8.0),
-            child: Column(
-              children: [
-                Text(
-                  (institution.title),
-                  style: const TextStyle(
-                    color: Colors.black,
-                    fontSize: 18,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-                const SizedBox(height: 20),
-                Container(
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(10),
-                    boxShadow: [
-                      BoxShadow(
-                        offset: Offset(0, 5),
-                        color: Colors.grey.shade200,
-                        spreadRadius: 2,
-                        blurRadius: 10,
-                      )
-                    ],
-                  ),
-                  child: ListTile(
-                    leading: const Icon(
-                      Icons.mail,
-                      size: 35,
-                    ),
-                    title: const Text('Email'),
-                    subtitle: Text(institution.email),
-                  ),
-                ),
-                const SizedBox(height: 20),
-                Container(
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(10),
-                    boxShadow: [
-                      BoxShadow(
-                        offset: Offset(0, 5),
-                        color: Colors.grey.shade200,
-                        spreadRadius: 2,
-                        blurRadius: 10,
-                      )
-                    ],
-                  ),
-                  child: ListTile(
-                    leading: const Icon(
-                      Icons.link,
-                      size: 35,
-                    ),
-                    title: const Text('Web Page'),
-                    subtitle: Text(institution.link),
-                  ),
-                ),
-                const SizedBox(height: 20),
-                Container(
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(10),
-                    boxShadow: [
-                      BoxShadow(
-                        offset: Offset(0, 5),
-                        color: Colors.grey.shade200,
-                        spreadRadius: 2,
-                        blurRadius: 10,
-                      )
-                    ],
-                  ),
-                  child: ListTile(
-                    leading: const Icon(
-                      Icons.map,
-                      size: 35,
-                    ),
-                    title: const Text('Phone'),
-                    subtitle: Text(institution.tel),
-                    trailing: ElevatedButton(
-                        onPressed: () {
-                          _makePhoneCall(institution.tel);
-                        },
-                        child: const Text("Call")),
-                  ),
-                ),
-                const SizedBox(height: 20),
-                Container(
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(10),
-                    boxShadow: [
-                      BoxShadow(
-                        offset: Offset(0, 5),
-                        color: Colors.grey.shade200,
-                        spreadRadius: 2,
-                        blurRadius: 10,
-                      )
-                    ],
-                  ),
-                  child: ListTile(
-                    leading: const Icon(
-                      Icons.map,
-                      size: 35,
-                    ),
-                    title: const Text('Adress'),
-                    subtitle: Text(institution.adres),
-                    trailing: ElevatedButton(
-                        onPressed: () {
-                          gotoMap();
-                        },
-                        child: const Text("Go Map")),
-                  ),
-                ),
-              ],
-            ),
+            child: _buildDetails(),
           )
-
-          // Container(
-          //   padding: const EdgeInsets.all(2),
-          //   decoration: BoxDecoration(
-          //     borderRadius: BorderRadius.circular(5),
-          //     color: Colors.grey.shade200,
-          //   ),
-          //   child: Card(
-          //     elevation: 2,
-          //     child: Text(institution.title.toString()),
-          //   ),
-          // ),
-          // Text('Email: ${institution.email}'),
-          // Text('Code: ${institution.code}'),
-          // ElevatedButton.icon(
-          //     onPressed: () {
-          //       _makePhoneCall(institution.tel);
-          //     },
-          //     icon: const Icon(Icons.call),
-          //     label: const Text("Call")),
-          // ElevatedButton.icon(
-          //     onPressed: () {
-          //       gotoMap();
-          //     },
-          //     icon: const Icon(Icons.map),
-          //     label: const Text("Call")),
-          // Text(infoText),
         ],
       ),
     );
@@ -230,11 +90,99 @@ class _detailsScreenState extends State<detailsScreen> {
   gotoMap() {
     try {
       var address = institution.adres;
-      final Uri _url =
+      final Uri url =
           Uri.parse('https://www.google.com/maps/search/?api=1&query=$address');
-      launchUrl(_url);
+      launchUrl(url);
     } catch (e) {
       debugPrintStack();
     }
+  }
+
+  Widget _buildDetails() {
+    return Column(
+      children: [
+        Text(
+          (institution.title),
+          style: const TextStyle(
+            color: Colors.black,
+            fontSize: 18,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        const SizedBox(height: 20),
+        _buildCustomListTile(
+          Icons.mail,
+          'Email',
+          institution.email,
+        ),
+        const SizedBox(height: 20),
+        _buildCustomListTile(
+          Icons.link,
+          'Web Page',
+          institution.link,
+        ),
+        const SizedBox(height: 20),
+        _buildCustomListTile(
+          Icons.map,
+          'Phone',
+          institution.tel,
+          onPressed: () {
+            _makePhoneCall(institution.tel);
+          },
+          buttonText: 'Call',
+        ),
+        const SizedBox(height: 20),
+        _buildCustomListTile(
+          Icons.map,
+          'Address',
+          institution.adres,
+          onPressed: () {
+            gotoMap();
+          },
+          buttonText: 'Go Map',
+        ),
+      ],
+    );
+  }
+
+  Widget _buildCustomListTile(
+    IconData leadingIcon,
+    String title,
+    String subtitle, {
+    VoidCallback? onPressed,
+    String? buttonText,
+  }) {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(10),
+        boxShadow: [
+          BoxShadow(
+            offset: const Offset(0, 5),
+            color: Colors.grey.shade200,
+            spreadRadius: 2,
+            blurRadius: 10,
+          ),
+        ],
+      ),
+      child: ListTile(
+        leading: Icon(
+          leadingIcon,
+          size: 35,
+        ),
+        title: Text(title),
+        subtitle: Text(subtitle),
+        trailing: buttonText != null
+            ? ElevatedButton(
+                onPressed: onPressed,
+                child: Text(buttonText),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.grey.shade500,
+                  foregroundColor: Colors.white,
+                ),
+              )
+            : null,
+      ),
+    );
   }
 }
