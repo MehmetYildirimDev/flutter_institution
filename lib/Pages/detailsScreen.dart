@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_institutions_testcase/model/institution.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 
@@ -73,27 +74,6 @@ class _detailsScreenState extends State<detailsScreen> {
     );
   }
 
-  void _makePhoneCall(String phoneNumber) async {
-    String telScheme = 'tel:$phoneNumber';
-
-    if (await canLaunchUrlString(telScheme)) {
-      await launchUrlString(telScheme);
-    } else {
-      throw 'The phone call couldn\'t be initiated: $telScheme';
-    }
-  }
-
-  gotoMap() {
-    try {
-      var address = institution.adres;
-      final Uri url =
-          Uri.parse('https://www.google.com/maps/search/?api=1&query=$address');
-      launchUrl(url);
-    } catch (e) {
-      debugPrintStack();
-    }
-  }
-
   Widget _buildDetails() {
     return Column(
       children: [
@@ -111,12 +91,20 @@ class _detailsScreenState extends State<detailsScreen> {
           Icons.mail,
           'Email',
           institution.email,
+          onPressed: () {
+            _writeEmail();
+          },
+          buttonText: 'Write',
         ),
         const SizedBox(height: 20),
         _buildCustomListTile(
           Icons.link,
           'Web Page',
           institution.link,
+          onPressed: () {
+            _openWebPage();
+          },
+          buttonText: 'Web',
         ),
         const SizedBox(height: 20),
         _buildCustomListTile(
@@ -136,7 +124,7 @@ class _detailsScreenState extends State<detailsScreen> {
           onPressed: () {
             gotoMap();
           },
-          buttonText: 'Go Map',
+          buttonText: 'Map',
         ),
       ],
     );
@@ -182,5 +170,64 @@ class _detailsScreenState extends State<detailsScreen> {
             : null,
       ),
     );
+  }
+
+  void _writeEmail() async {
+    String? encodeQueryParameters(Map<String, String> params) {
+      return params.entries
+          .map((MapEntry<String, String> e) =>
+              '${Uri.encodeComponent(e.key)}=${Uri.encodeComponent(e.value)}')
+          .join('&');
+    }
+
+    final Uri emailUri = Uri(
+      scheme: 'mailto',
+      path: institution.email,
+      query: encodeQueryParameters(
+          <String, String>{'subject': 'Subject', 'body': 'Hi'}),
+    );
+    if (await canLaunchUrl(emailUri)) {
+      launchUrl(emailUri);
+    } else {
+      throw Exception('Could not launch ${institution.email}');
+    }
+  }
+
+  void _openWebPage() async {
+    final Uri url = Uri.parse(institution.link);
+
+    if (await canLaunchUrl(url)) {
+      await launchUrl(url);
+    } else {
+      Fluttertoast.showToast(
+        msg: 'Web page couldn\'t be opened.',
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.CENTER,
+        timeInSecForIosWeb: 1,
+        backgroundColor: Colors.red,
+        textColor: Colors.white,
+      );
+    }
+  }
+
+  void _makePhoneCall(String phoneNumber) async {
+    String telScheme = 'tel:$phoneNumber';
+
+    if (await canLaunchUrlString(telScheme)) {
+      await launchUrlString(telScheme);
+    } else {
+      throw 'The phone call couldn\'t be initiated: $telScheme';
+    }
+  }
+
+  gotoMap() {
+    try {
+      var address = institution.adres;
+      final Uri url =
+          Uri.parse('https://www.google.com/maps/search/?api=1&query=$address');
+      launchUrl(url);
+    } catch (e) {
+      debugPrintStack();
+    }
   }
 }
