@@ -4,4 +4,4 @@ Home Page:
 
 Details Page:
 
-<img src="https://github.com/MehmetYildirimDev/flutter_institution/assets/95688733/7ebc18ad-b581-40c5-aab5-fd2191951247" widht="750" height="750">
+<img src="https://github.com/MehmetYildirimDev/flutter_institution/assets/95688733/3edae956-5da2-4a54-8f4c-636b98f4be3d" widht="750" height="750">
