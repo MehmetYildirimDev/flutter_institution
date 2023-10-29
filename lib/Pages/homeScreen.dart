@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:dio/dio.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_institutions_testcase/Pages/detailsScreen.dart';
 import 'package:flutter_institutions_testcase/model/institution.dart';
@@ -113,11 +114,10 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                     onTap: () {
                       Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => detailsScreen(institution),
-                        ),
-                      );
+                          context,
+                          CupertinoPageRoute(
+                            builder: (redContext) => detailsScreen(institution),
+                          ));
                     },
                   ),
                 ),
